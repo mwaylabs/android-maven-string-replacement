@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.devhead.android</groupId>
+    <artifactId>stringreplacement</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>apk</packaging>
+    <name>stringreplacement</name>
+
+    <properties>
+        <platform.version> 2.3.3
+            </platform.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>${platform.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <!-- a pair definition for resource filtering of xml files only (not binary files since they get mangled -->
+            <resource>
+                <directory>${project.basedir}/res</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/filtered-res</targetPath>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/res</directory>
+                <filtering>false</filtering>
+                <targetPath>${project.build.directory}/filtered-res</targetPath>
+                <excludes>
+                    <exclude>**/*.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+           <groupId>com.google.code.maven-replacer-plugin</groupId>
+           <artifactId>replacer</artifactId>
+           <version>1.5.0</version>
+           <executions>
+               <execution>
+                   <phase>prepare-package</phase>
+                   <goals>
+                       <goal>replace</goal>
+                   </goals>                   
+               </execution>
+           </executions>
+           <configuration>
+               <includes>
+                   <include>target/filtered-res/values/strings.xml</include>
+               </includes>
+               <replacements>
+                   <replacement>
+                       <token>Hello stringreplacement!</token>
+                       <value>REPLACED STRING</value>
+                   </replacement>         
+               </replacements>
+           </configuration>
+       </plugin>
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+                    <assetsDirectory>${project.basedir}/assets</assetsDirectory>
+                    <resourceDirectory>${project.build.directory}/filtered-res</resourceDirectory>
+                    <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+                    <sdk>
+                        <platform>10</platform>
+                    </sdk>
+                                        <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
